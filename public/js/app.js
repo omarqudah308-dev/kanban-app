@@ -36,11 +36,17 @@ function saveTasks(tasks) {
 function loadTasks() {
     try {
         const saved = localStorage.getItem('kanban-tasks');
-        return saved ? JSON.parse(saved) : [];
-    } catch {
-        return [];
-    }
+        if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEFAULT_TASKS;
 }
+
+const DEFAULT_TASKS = [
+    { id: generateId(), title: 'Design landing page', description: 'Hero section, features grid, and CTA', column: 'todo', priority: 'high', createdAt: formatDate() },
+    { id: generateId(), title: 'Set up Stripe checkout', description: 'Wire up checkout session endpoint', column: 'todo', priority: 'medium', createdAt: formatDate() },
+    { id: generateId(), title: 'Build task board', description: 'Add, edit, delete, and drag tasks', column: 'inprogress', priority: 'high', createdAt: formatDate() },
+    { id: generateId(), title: 'Write README', description: 'Project overview and setup steps', column: 'done', priority: 'low', createdAt: formatDate() },
+];
 
 function filterTasksByColumn(tasks, columnId) {
     return tasks.filter(task => task.column === columnId);
@@ -484,8 +490,8 @@ function App() {
 
 // Initialize app when DOM is ready
 if (typeof document !== 'undefined') {
-    const root = document.createElement('div');
-    root.id = 'root';
-    document.body.appendChild(root);
-    ReactDOM.render(<App />, root);
+    const board = document.getElementById('board');
+    if (board) {
+        ReactDOM.render(<App />, board);
+    }
 }
