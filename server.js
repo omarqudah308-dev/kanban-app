@@ -12,21 +12,36 @@ app.get('/', (req, res) => {
 });
 
 app.post('/create-checkout-session', async (req, res) => {
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-            price_data: {
-                currency: 'usd',
-                product_data: { name: 'Kanban Premium' },
-                unit_amount: 999,
-            },
-            quantity: 1,
-        }],
-        mode: 'subscription',
-        success_url: 'http://localhost:3000/success',
-        cancel_url: 'http://localhost:3000/cancel',
-    });
-    res.json({ id: session.id });
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: 'Kanban Premium',
+                        description: 'Unlimited boards, priority support & advanced features',
+                    },
+                    unit_amount: 999,
+                },
+                quantity: 1,
+            }],
+            mode: 'subscription',
+            success_url: (process.env.BASE_URL || 'https://kanban-app.onrender.com') + '/success',
+            cancel_url: (process.env.BASE_URL || 'https://kanban-app.onrender.com') + '/cancel',
+        });
+        res.json({ id: session.id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/success', (req, res) => {
+    res.render('success');
+});
+
+app.get('/cancel', (req, res) => {
+    res.render('cancel');
 });
 
 const PORT = process.env.PORT || 3000;
