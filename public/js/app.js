@@ -484,7 +484,7 @@ function App() {
             </div>
 
             <div className="toast" id="toast" hidden></div>
-        >
+        </>
     );
 }
 
